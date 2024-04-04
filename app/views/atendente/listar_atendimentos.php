@@ -77,8 +77,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <p>Nenhum resultado encontrado.</p>
         <?php endif; ?>
 
-        <a href="atendente.php">Voltar</a>
-        <a href="../logout.php">Logout</a>
+        <ul>
+            <li><a href="atendente.php">Voltar</a></li>
+            <li><a href="../logout.php">Logout</a></li>
+        </ul>
     </div>
     <script src="../../public/assets/js/script.js"></script>
 </body>

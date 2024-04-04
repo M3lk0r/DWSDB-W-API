@@ -18,7 +18,7 @@
         <form action="../app/views/login.php" method="POST">
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                <input type="text" class="form-control" id="email" name="email" required>
             </div>
             <div class="form-group">
                 <label for="senha">Senha:</label>

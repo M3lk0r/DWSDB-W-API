@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Usuário</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 
 <body>
@@ -15,11 +15,10 @@
 
     <div class="container">
         <?php
-        require_once '../config/database.php';
+        #require_once '../config/database.php';
+        require_once '../app/models/Usuario.php';
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            require_once '../app/models/Usuario.php';
-
             $dadosUsuario = array(
                 'nome' => $_POST['nome'] ?? '',
                 'endereco' => $_POST['endereco'] ?? '',
@@ -47,14 +46,26 @@
         ?>
 
         <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="POST">
-            <input type="text" name="nome" placeholder="nome" required><br>
+            <input type="text" name="nome" placeholder="Nome" required><br>
             <input type="text" name="endereco" placeholder="Endereço" required><br>
             <input type="text" name="cpf" placeholder="CPF" required><br>
             <input type="text" name="celular" placeholder="Celular" required><br>
             <input type="text" name="altura" placeholder="Altura" required><br>
             <input type="text" name="peso" placeholder="Peso" required><br>
-            <input type="text" name="tipo_sanguineo" placeholder="Tipo Sanguíneo" required><br>
-            <input type="email" name="email" placeholder="Email" required><br>
+            <div class="form-group">
+                <label for="tipo_sanguineo">Tipo Sanguíneo:</label>
+                <select id="tipo_sanguineo" name="tipo_sanguineo" required>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                </select>
+            </div><br>
+            <input type="text" name="email" placeholder="Email" required><br>
             <input type="password" name="senha" placeholder="Senha" required><br>
             <select name="tipo" required>
                 <option value="">Selecione um tipo</option>
@@ -64,7 +75,7 @@
         </form>
     </div>
 
-    <script src="script.js"></script>
+    <script src="./assets/js/script.js"></script>
 </body>
 
 </html>

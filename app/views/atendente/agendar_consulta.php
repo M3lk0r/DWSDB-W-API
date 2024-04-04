@@ -82,8 +82,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
             <button type="submit" class="btn btn-primary">Agendar Consulta</button>
         </form>
-        <a href="atendente.php">Voltar</a>
-        <a href="../logout.php">Logout</a>
+        <ul>
+            <li><a href="atendente.php">Voltar</a></li>
+            <li><a href="../logout.php">Logout</a></li>
+        </ul>
     </div>
 
     <script src="../../public/assets/js/script.js"></script>
