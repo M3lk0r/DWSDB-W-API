@@ -25,6 +25,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $resultado = $atendimento->agendarConsulta($idPaciente, $idMedico, $dataAtendimento, $observacoes);
 
+        $_POST = '';
+        $_POST . clearstatcache();
+
         if ($resultado) {
             echo '<div class="alert alert-success" role="alert">Consulta agendada com sucesso!</div>';
         } else {

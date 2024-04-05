@@ -8,10 +8,9 @@ if (isset($_SESSION['id'])) {
     } elseif ($_SESSION['tipo'] == 'medico') {
         header("Location: ../app/views/medico/medico.php");
     }
-    exit;
+    session_unset();
+    session_destroy();
 }
-session_unset();
-session_destroy();
 ?>
 
 <!DOCTYPE html>

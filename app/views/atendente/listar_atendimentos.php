@@ -12,15 +12,15 @@ include_once '../../models/Atendimento.php';
 $usuarios = [];
 $atendimentos = [];
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['termo'])) {
-        $termo = $_POST['termo'];
-
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['termo'])) {
+    try {
+        $termo = $_POST['termo'] ?? '';
         $usuario = new Usuario();
         $usuarios = $usuario->buscar($termo);
-
         $atendimento = new Atendimento();
 
+        $_POST = '';
+        $_POST . clearstatcache();
         foreach ($usuarios as $u) {
             $listaAtendimentos = $atendimento->listarAtendimentosPaciente($u['id']);
 
@@ -31,6 +31,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             $atendimentos[$u['id']] = $atendimento->listarAtendimentosPaciente($u['id']);
         }
+    } catch (Exception $e) {
+        $_POST = '';
+        $_POST . clearstatcache();
+        echo 'Ocorreu um erro: ' . $e->getMessage();
+    }
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['deletar_atendimento'])) {
+    try {
+        $atendimento = new Atendimento();
+        $idAtendimento = $_POST['deletar_atendimento'];
+        $resultado = $atendimento->deletarAtendimentoPorId($idAtendimento);
+        $_POST = '';
+        $_POST . clearstatcache();
+        echo $resultado;
+    } catch (Exception $e) {
+        $_POST = '';
+        $_POST . clearstatcache();
+        echo 'Ocorreu um erro ao deletar atendimento: ' . $e->getMessage();
+    }
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_atendimento'])) {
+
+    try {
+        $atendimento = new Atendimento();
+        $idAtendimento = $_POST['editar_atendimento']['id'];
+        $data = $_POST['editar_atendimento']['data'];
+        $observacoes = $_POST['editar_atendimento']['observacoes'];
+
+        $resultado = $atendimento->atualizarAtendimento($idAtendimento, $observacoes, $data);
+
+        $_POST = '';
+        $_POST . clearstatcache();
+        if ($resultado) {
+            echo "Atendimento atualizado com sucesso.";
+        } else {
+            throw new Exception("Erro ao atualizar o Atendimento.");
+        }
+    } catch (Exception $e) {
+        $_POST = '';
+        $_POST . clearstatcache();
+        echo $e->getMessage();
     }
 }
 ?>
@@ -88,8 +131,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                                             echo $atendimento['data_atendimento'];
                                                         } ?></td>
                                     <td align="center"><?php echo $atendimento['observacoes']; ?></td>
-                                    <td align="center"> <a href="#" class="bi bi-pencil-fill" title="Editar"></a> </td>
-                                    <td align="center"> <a href="#" class="deletar fa fa-times-circle" title="Deletar"></a> </td>
+                                    <td align="center">
+                                        <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
+                                            <input type="hidden" name="editar_atendimento[id]" value="<?php echo $atendimento['id']; ?>">
+                                            <button type="editar" class="editar bi bi-pencil-fill" title="Editar"></button>
+                                        </form>
+                                    </td>
+                                    <td align="center">
+                                        <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
+                                            <input type="hidden" name="deletar_atendimento" value="<?php echo $atendimento['id']; ?>">
+                                            <button type="delete" class="deletar fa fa-times-circle" title="Deletar"></button>
+                                        </form>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else : ?>
@@ -110,83 +163,134 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     <script src="../../public/assets/js/script.js"></script>
 </body>
-<!-- não sei pq a porcaria da tabela n puxa o css -->
-<style>
-    .style-tabela table {
-        float: left;
-        border: 1px solid #ccc;
-        border-bottom: 0;
-        border-right: 0;
-        font-size: 0.8em;
-    }
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="text/javascript">
+    $('.editar').click(async function(e) {
+        e.preventDefault();
+        var data = $(this).closest('tr').find('td:eq(1)').text();
+        var observacoes = $(this).closest('tr').find('td:eq(2)').text();
+        var idAtendimento = $(this).closest('tr').find('input[name="editar_atendimento[id]"]').val();
 
-    .style-tabela table tr td {
-        padding: 0.5em;
-        border: 1px solid #ccc;
-        border-top: 0;
-        border-left: 0;
-    }
+        $('#edit-data').val(data);
+        $('#edit-observacoes').val(observacoes);
+        $('#edit-id').val(idAtendimento);
 
-    .style-tabela table td.top {
-        background-color: #00bcc4;
-        color: #fff;
-        font-size: 1.2em;
-    }
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: "btn btn-success",
+                cancelButton: "btn btn-danger"
+            },
+            buttonsStyling: true
+        });
 
-    .style-tabela table td.top.center {
-        text-align: center;
-    }
+        const {
+            value: formValues
+        } = await Swal.fire({
+            title: "Editar atendimento",
+            html: `
+        <input type="hidden" id="edit-id" name="edit-id">
+        <label for="edit-email">Data do atendimento:</label>
+        <input type="datetime-local" id="edit-data" name="edit-data" value="${data}">
+        <div class="form-group">
+            <label for="edit-observacoes">Observações:</label>
+            <textarea id="edit-observacoes" name="edit-observacoes" rows="4" required><?php echo $atendimento['observacoes']; ?></textarea>
+        </div>
+        `,
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: "Editar",
+            cancelButtonText: "Cancelar",
+            reverseButtons: true,
+            preConfirm: async () => {
+                return {
+                    id: idAtendimento,
+                    data: $('#edit-data').val(),
+                    observacoes: $('#edit-observacoes').val(),
+                };
+            }
+        });
+        if (formValues) {
+            console.log(formValues);
+            $.ajax({
+                url: '<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>',
+                type: 'POST',
+                data: {
+                    editar_atendimento: formValues
+                },
+                success: function(result) {
+                    swalWithBootstrapButtons.fire({
+                        title: "Cadastro alterado",
+                        text: 'O cadastro foi alterado com sucesso.',
+                        icon: "success"
+                    }).then(function() {
+                        location.reload();
+                    });
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    swalWithBootstrapButtons.fire({
+                        title: "Error!",
+                        text: errorThrown,
+                        icon: "error"
+                    });
+                }
+            });
+        }
+    });
 
-    .style-tabela table td.total {
-        text-align: left;
-        font-weight: bold;
-    }
+    $('.deletar').click(function(e) {
+        e.preventDefault();
+        var idAtendimento = $(this).closest('tr').find('input[name="editar_atendimento[id]"]').val();
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: "btn btn-success",
+                cancelButton: "btn btn-danger"
+            },
+            buttonsStyling: true
+        });
+        swalWithBootstrapButtons.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel!",
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>',
+                    type: 'POST',
+                    data: {
+                        deletar_atendimento: idAtendimento
+                    },
+                    success: function(result) {
+                        swalWithBootstrapButtons.fire({
+                            title: "Deleted!",
+                            text: 'Your file has been deleted.',
+                            icon: "success"
+                        }).then(function() {
+                            location.reload();
+                        });
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        swalWithBootstrapButtons.fire({
+                            title: "Error!",
+                            text: errorThrown,
+                            icon: "error"
+                        });
+                    }
+                });
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                swalWithBootstrapButtons.fire({
+                    title: "Cancelled",
+                    text: "Fica para proxima :)",
+                    icon: "error"
+                });
+            }
+        });
 
-    .style-tabela table td.top-toltip {
-        background-color: #207d97;
-        height: 25px;
-        color: #fff;
-        font-size: 16px;
-    }
-
-    .style-tabela tbody tr td {
-        padding: 0.3em;
-        border: 1px solid #ccc;
-        border-top: 0;
-        border-left: 0;
-    }
-
-    .style-tabela tbody tr {
-        background-color: #fff;
-        color: #666;
-    }
-
-    .style-tabela tbody tr:hover {
-        background-color: #f4f4f4;
-        color: #00bcc4;
-    }
-
-
-    .style-tabela tbody tr td .editar {
-        color: #00d549;
-        font-size: 1.2em;
-        font-weight: bold;
-        display: inline;
-        text-decoration: none;
-    }
-
-    .style-tabela tbody tr td .deletar {
-        color: #bf303c;
-        font-size: 1.2em;
-        font-weight: bold;
-        display: inline;
-        text-decoration: none;
-    }
-
-    .style-tabela tbody tr.mensagemAlerta {
-        background-color: #fdeeef;
-        color: #bf303c;
-    }
-</style>
+    });
+</script>
 
 </html>

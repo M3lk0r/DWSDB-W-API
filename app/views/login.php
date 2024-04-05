@@ -3,13 +3,15 @@ session_start();
 
 if (isset($_SESSION['id'])) {
     if ($_SESSION['tipo'] == 'paciente') {
-        header("Location: paciente.php");
+        header("Location: ./paciente/paciente.php");
     } elseif ($_SESSION['tipo'] == 'funcionario') {
-        header("Location: funcionario.php");
+        header("Location: ./funcionario/funcionario.php");
     } elseif ($_SESSION['tipo'] == 'medico') {
-        header("Location: medico.php");
+        header("Location: ./medico/medico.php");
     }
-    exit;
+    session_unset();
+    session_destroy();
+    header("Location: ../../public/index.php");
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

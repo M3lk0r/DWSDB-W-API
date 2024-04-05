@@ -1,8 +1,10 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$database = "hospital_system";
+$config = parse_ini_file('../config.ini', true);
+
+$servername = $config['DATABASE']['host'];
+$username = $config['DATABASE']['user'];
+$password = $config['DATABASE']['passwd'];
+$database = $config['DATABASE']['hospital_system'];
 
 $conn = new mysqli($servername, $username, $password, $database);
 

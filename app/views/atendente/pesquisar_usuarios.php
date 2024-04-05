@@ -12,48 +12,64 @@ $usuario = new Usuario();
 $resultadoPesquisa = $usuario->buscar('');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['deletar_usuario'])) {
-    $idUsuario = $_POST['deletar_usuario'];
-    $resultado = $usuario->deletarUsuarioPorId($idUsuario);
-    $_POST = '';
-    $_POST . clearstatcache();
-    echo $resultado;
+    try {
+        $idUsuario = $_POST['deletar_usuario'];
+        $resultado = $usuario->deletarUsuarioPorId($idUsuario);
+        $_POST = '';
+        $_POST . clearstatcache();
+        echo $resultado;
+    } catch (Exception $e) {
+        $_POST = '';
+        $_POST . clearstatcache();
+        echo 'Ocorreu um erro: ' . $e->getMessage();
+    }
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_usuario'])) {
+    try {
+        $idUsuario = $_POST['editar_usuario']['id'];
+        $email = $_POST['editar_usuario']['email'];
+        $endereco = $_POST['editar_usuario']['endereco'];
+        $celular = $_POST['editar_usuario']['celular'];
+        $peso = $_POST['editar_usuario']['peso'];
+        $tipo = $_POST['editar_usuario']['tipo'];
 
-    echo $_POST['editar_usuario'];
-    $idUsuario = $_POST['editar_usuario']['id'];
-    $email = $_POST['editar_usuario']['email'];
-    $endereco = $_POST['editar_usuario']['endereco'];
-    $celular = $_POST['editar_usuario']['celular'];
-    $peso = $_POST['editar_usuario']['peso'];
-    $tipo = $_POST['editar_usuario']['tipo'];
+        $dadosUsuario = array(
+            'endereco' => urldecode($endereco),
+            'email' => urldecode($email),
+            'celular' => urldecode($celular),
+            'peso' => $peso,
+            'tipo' => $tipo,
+        );
 
-    $dadosUsuario = array(
-        'endereco' => urldecode($endereco),
-        'email' => urldecode($email),
-        'celular' => urldecode($celular),
-        'peso' => $peso,
-        'tipo' => $tipo,
-    );
+        $resultado = $usuario->atualizar($idUsuario, $dadosUsuario);
 
-    $resultado = $usuario->atualizar($idUsuario, $dadosUsuario);
+        $_POST = '';
+        $_POST . clearstatcache();
 
-    $_POST = '';
-    $_POST . clearstatcache();
-
-    if ($resultado) {
-        echo "Usuário atualizado com sucesso.";
-    } else {
-        echo "Erro ao atualizar o usuário.";
+        if ($resultado) {
+            echo "Usuário atualizado com sucesso.";
+        } else {
+            throw new Exception("Erro ao atualizar o usuário.");
+        }
+    } catch (Exception $e) {
+        $_POST = '';
+        $_POST . clearstatcache();
+        echo $e->getMessage();
     }
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['termo_pesquisa'])) {
-    $termoPesquisa = $_POST['termo_pesquisa'];
-    $resultadoPesquisa = $usuario->buscar($termoPesquisa);
-    $_POST = '';
-    $_POST . clearstatcache();
+    try {
+        $termoPesquisa = $_POST['termo_pesquisa'];
+        $resultadoPesquisa = $usuario->buscar($termoPesquisa);
+        $_POST = '';
+        $_POST . clearstatcache();
+    } catch (Exception $e) {
+        $_POST = '';
+        $_POST . clearstatcache();
+        echo 'Ocorreu um erro: ' . $e->getMessage();
+    }
 }
 ?>
 <!DOCTYPE html>

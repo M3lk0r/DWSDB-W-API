@@ -105,4 +105,16 @@ class Atendimento
             return false;
         }
     }
+
+    public function deletarAtendimentoPorId($idAtendimento)
+    {
+        $sql = "DELETE FROM atendimentos WHERE id = $idAtendimento";
+        $result = $this->conn->query($sql);
+
+        if ($result) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
