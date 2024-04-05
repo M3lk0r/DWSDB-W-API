@@ -13,16 +13,17 @@ if (isset($_SESSION['id'])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    include_once '../../config/database.php';
+    include_once '../models/Usuario.php';
 
     $email = $_POST['email'];
     $senha = $_POST['senha'];
 
-    $sql = "SELECT * FROM usuarios WHERE email = '$email' AND senha = '$senha'";
-    $result = $conn->query($sql);
+    $usuario = new Usuario();
 
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
+    $row = $usuario->login($email, $senha);
+
+    if (!isset($_SESSION['id']) or !isset($_SESSION['tipo'])) {
+
         $_SESSION['id'] = $row['id'];
         $_SESSION['tipo'] = $row['tipo'];
 
@@ -34,42 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: ./atendente/atendente.php");
         }
     } else {
-        header("Location: index.php?error=login_failed");
+        header("Location: logout.php");
     }
 } else {
     header("Location: ../../public/index.php");
 }
-?>
-<!DOCTYPE html>
-<html lang="pt-br">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-    <header>
-        <h1>Login</h1>
-    </header>
-
-    <div class="container">
-        <?php
-        if (isset($mensagemErro)) {
-            echo '<div class="alert alert-danger" role="alert">' . $mensagemErro . '</div>';
-        }
-        ?>
-
-        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-            <input type="email" name="email" placeholder="Email" required><br>
-            <input type="password" name="senha" placeholder="Senha" required><br>
-            <button type="submit" class="btn btn-primary">Entrar</button>
-        </form>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-
-</html>

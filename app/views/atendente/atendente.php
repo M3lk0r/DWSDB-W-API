@@ -28,7 +28,7 @@ if ($_SESSION['tipo'] != 'atendente') {
         <ul>
             <li><a href="cadastrar_usuario.php">Cadastrar novo usuário</a></li>
             <li><a href="pesquisar_usuarios.php">Pesquisar usuários</a></li>
-            <li><a href="agendar_consulta.php">Agendar consulta</a></li>
+            <li><a href="agendar_atendimento.php">Agendar consulta</a></li>
             <li><a href="listar_atendimentos.php">Pesquisar atendimento por paciente</a></li>
             <li><a href="../logout.php">Logout</a></li>
         </ul>

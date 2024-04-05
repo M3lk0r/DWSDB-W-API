@@ -91,4 +91,18 @@ class Atendimento
         }
         return $atendimentos;
     }
+
+    public function atualizarAtendimento($idAtendimento, $observacoes, $dataRetorno)
+    {
+        $observacoes = $this->conn->real_escape_string($observacoes);
+        $dataRetorno = $this->conn->real_escape_string($dataRetorno);
+
+        $sql = "UPDATE atendimentos SET observacoes = '$observacoes', data_retorno = '$dataRetorno' WHERE id = $idAtendimento";
+
+        if ($this->conn->query($sql) === TRUE) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

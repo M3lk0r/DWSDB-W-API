@@ -54,8 +54,10 @@ class Usuario
         return $usuarios;
     }
 
-    public function atualizar($id, $novosDados)
+    public function atualizar($id, $dadosDoFormulario)
     {
+        parse_str($dadosDoFormulario, $novosDados);
+
         $sql = "UPDATE usuarios SET ";
         foreach ($novosDados as $campo => $valor) {
             $valor = $this->conn->real_escape_string($valor);
@@ -71,6 +73,7 @@ class Usuario
         }
     }
 
+
     public function listarUsuariosPorTipo($tipo)
     {
         $tipo = $this->conn->real_escape_string($tipo);
@@ -84,5 +87,42 @@ class Usuario
             }
         }
         return $usuarios;
+    }
+
+    public function buscarUsuarioPorId($id)
+    {
+        $id = $this->conn->real_escape_string($id);
+        $sql = "SELECT * FROM usuarios WHERE id = $id";
+        $result = $this->conn->query($sql);
+
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        } else {
+            return null;
+        }
+    }
+
+    public function login($email, $senha)
+    {
+        $email = $this->conn->real_escape_string($email);
+        $senha = $this->conn->real_escape_string($senha);
+        $sql = "SELECT * FROM usuarios WHERE email = '$email' AND senha = '$senha'";
+        $result = $this->conn->query($sql);
+        $row = $result->fetch_assoc();
+
+        return $row;
+    }
+
+    public function deletarUsuarioPorId($id)
+    {
+        $id = $this->conn->real_escape_string($id);
+        $sql = "DELETE FROM usuarios WHERE id = $id";
+        $result = $this->conn->query($sql);
+
+        if ($result) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

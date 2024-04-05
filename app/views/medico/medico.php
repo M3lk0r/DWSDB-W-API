@@ -32,22 +32,12 @@ $listaAtendimentos = $atendimento->listarAtendimentosMedico($idMedico);
     </header>
 
     <div class="container">
-        <h2>Sua Agenda de Atendimentos</h2>
+        <p>Aqui você pode realizar várias tarefas de atendimento.</p>
         <ul>
-            <?php
-            if ($listaAtendimentos) {
-                foreach ($listaAtendimentos as $atendimento) {
-                    echo '<li>ID do Atendimento: ' . $atendimento['id'] . '</li>';
-                    echo '<li>Data do Atendimento: ' . $atendimento['data_atendimento'] . '</li>';
-                    echo '<li>Observações: ' . $atendimento['observacoes'] . '</li>';
-                    echo '<hr>';
-                }
-            } else {
-                echo '<p>Não há atendimentos agendados em sua agenda.</p>';
-            }
-            ?>
+            <li><a href="abrir_atendimento.php">Agendar Atendimento</a></li>
+            <li><a href="listar_atendimento.php">Pesquisar Atendimento</a></li>
+            <li><a href="../logout.php">Logout</a></li>
         </ul>
-        <a href="../logout.php">Logout</a>
     </div>
 
     <script src="../../public/assets/js/script.js"></script>

@@ -1,3 +1,19 @@
+<?php
+session_start();
+if (isset($_SESSION['id'])) {
+    if ($_SESSION['tipo'] == 'paciente') {
+        header("Location: ../app/views/paciente/paciente.php");
+    } elseif ($_SESSION['tipo'] == 'funcionario') {
+        header("Location: ../app/views/funcionario/funcionario.php");
+    } elseif ($_SESSION['tipo'] == 'medico') {
+        header("Location: ../app/views/medico/medico.php");
+    }
+    exit;
+}
+session_unset();
+session_destroy();
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -26,10 +42,6 @@
             </div>
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
-
-        <hr>
-
-        <h2>Cadastro de Usuário</h2>
         <form action="cadastro.php" method="POST">
             <button type="submit" class="btn btn-primary">Cadastrar</button>
         </form>

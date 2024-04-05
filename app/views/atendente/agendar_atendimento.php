@@ -7,7 +7,6 @@ if ($_SESSION['tipo'] != 'atendente') {
 }
 
 include_once '../../models/Atendimento.php';
-
 include_once '../../models/Usuario.php';
 
 $usuario = new Usuario();
@@ -53,13 +52,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </header>
 
     <div class="container">
-        <form action="agendar_consulta.php" method="POST">
+        <form action="agendar_atendimento.php" method="POST">
             <div class="form-group">
                 <label for="id_paciente">Paciente:</label>
                 <select id="id_paciente" name="id_paciente" required>
                     <option value="">Selecione o paciente</option>
                     <?php foreach ($pacientes as $paciente) : ?>
-                        <option value="<?php echo $paciente['id']; ?>"><?php echo $paciente['nome']; ?></option>
+                        <option value="<?php echo $paciente['id']; ?>"><?php echo ($paciente['nome'] . ' | ' . $paciente['cpf']); ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
