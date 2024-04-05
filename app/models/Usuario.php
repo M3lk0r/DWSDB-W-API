@@ -56,22 +56,35 @@ class Usuario
 
     public function atualizar($id, $dadosDoFormulario)
     {
-        parse_str($dadosDoFormulario, $novosDados);
-
         $sql = "UPDATE usuarios SET ";
-        foreach ($novosDados as $campo => $valor) {
-            $valor = $this->conn->real_escape_string($valor);
-            $sql .= "$campo = '$valor', ";
+        $params = array();
+        foreach ($dadosDoFormulario as $campo => $valor) {
+            $sql .= "$campo = ?, ";
+            $params[] = $valor;
         }
         $sql = rtrim($sql, ', ');
-        $sql .= " WHERE id = $id";
+        $sql .= " WHERE id = ?";
 
-        if ($this->conn->query($sql) === TRUE) {
-            return true;
-        } else {
+        $params[] = $id;
+
+        $stmt = $this->conn->prepare($sql);
+
+        if ($stmt === false) {
             return false;
         }
+
+        $types = str_repeat('s', count($params));
+        $stmt->bind_param($types, ...$params);
+
+        $result = $stmt->execute();
+
+        if ($result === false) {
+            return false;
+        } else {
+            return true;
+        }
     }
+
 
 
     public function listarUsuariosPorTipo($tipo)

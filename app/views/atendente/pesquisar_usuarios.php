@@ -11,51 +11,50 @@ include_once '../../models/Usuario.php';
 $usuario = new Usuario();
 $resultadoPesquisa = $usuario->buscar('');
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['termo_pesquisa'])) {
-    $termoPesquisa = $_POST['termo_pesquisa'];
-    $resultadoPesquisa = $usuario->buscar($termoPesquisa);
-}
-
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['deletar_usuario'])) {
     $idUsuario = $_POST['deletar_usuario'];
     $resultado = $usuario->deletarUsuarioPorId($idUsuario);
+    $_POST = '';
+    $_POST . clearstatcache();
     echo $resultado;
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_usuario'])) {
-    if (isset($_POST['editar_usuario']['edit-id']) && isset($_POST['editar_usuario']['edit-nome']) && isset($_POST['editar_usuario']['edit-endereco']) && isset($_POST['editar_usuario']['edit-email']) && isset($_POST['editar_usuario']['edit-celular']) && isset($_POST['editar_usuario']['edit-peso']) && isset($_POST['editar_usuario']['edit-tipo'])) {
 
-        $idUsuario = $_POST['editar_usuario']['edit-id'];
-        $nome = $_POST['editar_usuario']['edit-nome'];
-        $endereco = $_POST['editar_usuario']['edit-endereco'];
-        $email = $_POST['editar_usuario']['edit-email'];
-        $celular = $_POST['editar_usuario']['edit-celular'];
-        $peso = $_POST['editar_usuario']['edit-peso'];
-        $tipo = $_POST['editar_usuario']['edit-tipo'];
+    echo $_POST['editar_usuario'];
+    $idUsuario = $_POST['editar_usuario']['id'];
+    $email = $_POST['editar_usuario']['email'];
+    $endereco = $_POST['editar_usuario']['endereco'];
+    $celular = $_POST['editar_usuario']['celular'];
+    $peso = $_POST['editar_usuario']['peso'];
+    $tipo = $_POST['editar_usuario']['tipo'];
 
-        $dadosUsuario = array(
-            'nome' => urldecode($nome),
-            'endereco' => urldecode($endereco),
-            'email' => urldecode($email),
-            'celular' => urldecode($celular),
-            'peso' => $peso,
-            'tipo' => $tipo,
-        );
+    $dadosUsuario = array(
+        'endereco' => urldecode($endereco),
+        'email' => urldecode($email),
+        'celular' => urldecode($celular),
+        'peso' => $peso,
+        'tipo' => $tipo,
+    );
 
-        $resultado = $usuario->atualizar($idUsuario, $dadosUsuario);
+    $resultado = $usuario->atualizar($idUsuario, $dadosUsuario);
 
-        if ($resultado) {
-            echo "Usuário atualizado com sucesso.";
-        } else {
-            echo "Erro ao atualizar o usuário.";
-        }
+    $_POST = '';
+    $_POST . clearstatcache();
+
+    if ($resultado) {
+        echo "Usuário atualizado com sucesso.";
     } else {
-        echo "Dados do formulário incompletos.";
+        echo "Erro ao atualizar o usuário.";
     }
 }
 
-
-
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['termo_pesquisa'])) {
+    $termoPesquisa = $_POST['termo_pesquisa'];
+    $resultadoPesquisa = $usuario->buscar($termoPesquisa);
+    $_POST = '';
+    $_POST . clearstatcache();
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -121,13 +120,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_usuario'])) {
                             <td align="center"><?php echo $usuario['tipo_sanguineo']; ?></td>
                             <td align="center"><?php echo $usuario['tipo']; ?></td>
                             <td align="center">
-                                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-                                    <input type="hidden" name="editar_usuario" value="<?php echo $usuario['id']; ?>">
+                                <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
+                                    <input type="hidden" name="editar_usuario[id]" value="<?php echo $usuario['id']; ?>">
                                     <button type="editar" class="editar bi bi-pencil-fill" title="Editar"></button>
                                 </form>
                             </td>
                             <td align="center">
-                                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                                <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post">
                                     <input type="hidden" name="deletar_usuario" value="<?php echo $usuario['id']; ?>">
                                     <button type="delete" class="deletar fa fa-times-circle" title="Deletar"></button>
                                 </form>
@@ -142,35 +141,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_usuario'])) {
             </tbody>
         </table>
     </div>
-    <div id="modal-editar" class="modal" style="display: none;">
-        <div class="modal-content">
-            <h2>Editar Usuário</h2>
-            <form id="form-editar-usuario">
-                <input type="hidden" id="edit-id" name="edit-id">
-                <label for="edit-nome">Nome:</label>
-                <input type="text" id="edit-nome" name="edit-nome">
-                <label for="edit-email">Email:</label>
-                <input type="text" id="edit-email" name="edit-email">
-                <label for="edit-endereco">Endereço:</label>
-                <input type="text" id="edit-endereco" name="edit-endereco">
-                <label for="edit-celular">Celular:</label>
-                <input type="text" id="edit-celular" name="edit-celular">
-                <label for="edit-peso">Peso:</label>
-                <input type="text" id="edit-peso" name="edit-peso">
-                <label for="edit-tipo">Tipo:</label>
-                <input type="text" id="edit-tipo" name="edit-tipo">
-                <button type="button" id="btn-gravar">Gravar</button>
-                <button type="button" id="btn-fechar">Fechar</button>
-            </form>
-        </div>
-    </div>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="text/javascript">
-    </script>
-
-    <script type="text/javascript">
-        $('.editar').click(function(e) {
+        $('.editar').click(async function(e) {
             e.preventDefault();
             var nome = $(this).closest('tr').find('td:eq(0)').text();
             var email = $(this).closest('tr').find('td:eq(1)').text();
@@ -178,9 +153,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_usuario'])) {
             var celular = $(this).closest('tr').find('td:eq(4)').text();
             var peso = $(this).closest('tr').find('td:eq(6)').text();
             var tipo = $(this).closest('tr').find('td:eq(8)').text();
-            var idUsuario = $(this).closest('form').find('input[name="editar_usuario"]').val();
+            var idUsuario = $(this).closest('tr').find('input[name="editar_usuario[id]"]').val();
 
-            $('#edit-nome').val(nome);
             $('#edit-email').val(email);
             $('#edit-endereco').val(endereco);
             $('#edit-celular').val(celular);
@@ -188,31 +162,77 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_usuario'])) {
             $('#edit-tipo').val(tipo);
             $('#edit-id').val(idUsuario);
 
-            $('#modal-editar').show();
-        });
-
-        $('#btn-gravar').click(function(e) {
-            e.preventDefault();
-            var dadosDoFormulario = $('#form-editar-usuario').serialize();
-            $.ajax({
-                url: '<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>',
-                method: 'POST',
-                data: dadosDoFormulario, // Passando os dados diretamente
-                success: function(response) {
-                    console.log(response);
-                    alert('Atualização realizada com sucesso.');
-                    location.reload(); // Recarregando a página após a atualização
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: "btn btn-success",
+                    cancelButton: "btn btn-danger"
                 },
-                error: function(xhr, status, error) {
-                    console.log(xhr.responseText);
-                    console.error(error);
-                    alert('Erro ao atualizar usuário. Verifique o console para mais detalhes.');
+                buttonsStyling: true
+            });
+
+            const {
+                value: formValues
+            } = await Swal.fire({
+                title: "Editar " + nome,
+                html: `
+        <input type="hidden" id="edit-id" name="edit-id">
+        <label for="edit-email">Email:</label>
+        <input type="text" id="edit-email" name="edit-email" value="${email}">
+        <label for="edit-endereco">Endereço:</label>
+        <input type="text" id="edit-endereco" name="edit-endereco" value="${endereco}">
+        <label for="edit-celular">Celular:</label>
+        <input type="text" id="edit-celular" name="edit-celular" value="${celular}">
+        <label for="edit-peso">Peso:</label>
+        <input type="text" id="edit-peso" name="edit-peso" value="${peso}">
+        <label for="edit-tipo">Tipo:</label>
+        <select name="edit-tipo" required id="edit-tipo">
+            <option value="">Selecione um tipo</option>
+            <option value="paciente" ${tipo === 'paciente' ? 'selected' : ''}>Paciente</option>
+            <option value="atendente" ${tipo === 'atendente' ? 'selected' : ''}>Atendente</option>
+            <option value="medico" ${tipo === 'medico' ? 'selected' : ''}>Medico</option>
+        </select>
+        `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: "Editar",
+                cancelButtonText: "Cancelar",
+                reverseButtons: true,
+                preConfirm: async () => {
+                    return {
+                        id: idUsuario,
+                        email: $('#edit-email').val(),
+                        endereco: $('#edit-endereco').val(),
+                        celular: $('#edit-celular').val(),
+                        peso: $('#edit-peso').val(),
+                        tipo: $('#edit-tipo').val()
+                    };
                 }
             });
-        });
-
-        $('#btn-fechar').click(function() {
-            $('#modal-editar').toggle();
+            if (formValues) {
+                $.ajax({
+                    url: '<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>',
+                    type: 'POST',
+                    data: {
+                        editar_usuario: formValues
+                    },
+                    success: function(result) {
+                        swalWithBootstrapButtons.fire({
+                            title: "Cadastro alterado",
+                            text: 'O cadastro foi alterado com sucesso.',
+                            icon: "success"
+                        }).then(function() {
+                            location.reload();
+                        });
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        swalWithBootstrapButtons.fire({
+                            title: "Error!",
+                            text: errorThrown,
+                            icon: "error"
+                        });
+                    }
+                });
+            }
         });
 
         $('.deletar').click(function(e) {
@@ -261,7 +281,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['editar_usuario'])) {
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                     swalWithBootstrapButtons.fire({
                         title: "Cancelled",
-                        text: "Your imaginary file is safe :)",
+                        text: "Fica para proxima :)",
                         icon: "error"
                     });
                 }
