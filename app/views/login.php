@@ -11,7 +11,9 @@ if (isset($_SESSION['id'])) {
     }
     session_unset();
     session_destroy();
-    header("Location: ../../public/index.php");
+    header("Location: ../../index.php");
+} else {
+    header("Location: ../../index.php");
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -40,5 +42,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: logout.php");
     }
 } else {
-    header("Location: ../../public/index.php");
+    header("Location: ../../index.php");
 }

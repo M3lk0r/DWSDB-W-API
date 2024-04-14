@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Usuário</title>
-    <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 
 <body>
@@ -16,7 +16,7 @@
     <div class="container">
         <?php
         #require_once '../config/database.php';
-        require_once '../app/models/Usuario.php';
+        require_once '../models/Usuario.php';
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $dadosUsuario = array(
@@ -37,7 +37,7 @@
             $resultado = $usuario->cadastrar($dadosUsuario);
 
             if ($resultado) {
-                header("Location: ../app/views/login.php");
+                header("Location: ../../index.php");
                 exit;
             } else {
                 echo '<div class="alert alert-danger" role="alert">Erro ao cadastrar usuário. Por favor, tente novamente.</div>';
@@ -75,7 +75,7 @@
         </form>
     </div>
 
-    <script src="./assets/js/script.js"></script>
+    <script src="../assets/js/script.js"></script>
 </body>
 
 </html>

@@ -2,7 +2,7 @@
 session_start();
 
 if ($_SESSION['tipo'] != 'atendente') {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit;
 }
 
@@ -34,7 +34,7 @@ if ($_SESSION['tipo'] != 'atendente') {
         </ul>
     </div>
 
-    <script src="../../public/assets/js/script.js"></script>
+    <script src="../../assets/js/script.js"></script>
 </body>
 
 </html>

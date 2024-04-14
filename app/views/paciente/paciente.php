@@ -76,7 +76,7 @@ if (!empty($listaAtendimentos)) {
         <a href="../logout.php">Logout</a>
     </div>
 
-    <script src="../../public/assets/js/script.js"></script>
+    <script src="../../assets/js/script.js"></script>
 </body>
 
 <style>

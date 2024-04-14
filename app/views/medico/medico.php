@@ -2,7 +2,7 @@
 session_start();
 
 if ($_SESSION['tipo'] != 'medico') {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit;
 }
 

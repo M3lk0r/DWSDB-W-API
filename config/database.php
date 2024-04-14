@@ -4,7 +4,7 @@ $config = parse_ini_file('../config.ini', true);
 $servername = $config['DATABASE']['host'];
 $username = $config['DATABASE']['user'];
 $password = $config['DATABASE']['passwd'];
-$database = $config['DATABASE']['hospital_system'];
+$database = $config['DATABASE']['db'];
 
 $conn = new mysqli($servername, $username, $password, $database);
 
